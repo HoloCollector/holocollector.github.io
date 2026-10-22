@@ -2,7 +2,7 @@
    SHOP SETTINGS — edit these first
    ===================================================================== */
 const SHOP = {
-  name: "Farhan's Card Shop",       // also edit it in index.html (title + data-shop-name)
+  name: "HoloCollector",             // also edit it in index.html (title + data-shop-name)
   whatsapp: "971500000000",          // PLACEHOLDER: your number in international format, digits only (971 = UAE, no + or leading 0)
   email: "yourname@example.com",     // PLACEHOLDER: your email address
   currency: "AED",
@@ -24,17 +24,10 @@ const SHOP = {
      emoji     – placeholder picture (any emoji)
      rare      – true to show a "RARE" badge, false otherwise
    HOW TO REMOVE A CARD: delete its { ... } block.
-   NOTE: The cards below are EXAMPLES only — replace them with your real stock.
+   NOTE: The list starts empty. Uncomment the sample line (or copy it) to add a real card.
    ===================================================================== */
 const PRODUCTS = [
-  { id: "ex-01", name: "Charizard ex",       set: "Obsidian Flames",  number: "125/197", type: "Fire",     condition: "Near Mint",      price: 180, stock: 1, emoji: "🔥", rare: true  },
-  { id: "ex-02", name: "Pikachu",            set: "Scarlet & Violet", number: "063/198", type: "Electric", condition: "Mint",           price: 15,  stock: 4, emoji: "⚡", rare: false },
-  { id: "ex-03", name: "Gyarados ex",        set: "Paldea Evolved",   number: "045/193", type: "Water",    condition: "Near Mint",      price: 35,  stock: 2, emoji: "🌊", rare: true  },
-  { id: "ex-04", name: "Mew ex",             set: "151",              number: "151/165", type: "Psychic",  condition: "Near Mint",      price: 95,  stock: 1, emoji: "🔮", rare: true  },
-  { id: "ex-05", name: "Bulbasaur",          set: "151",              number: "001/165", type: "Grass",    condition: "Lightly Played", price: 8,   stock: 5, emoji: "🌿", rare: false },
-  { id: "ex-06", name: "Umbreon V",          set: "Evolving Skies",   number: "094/203", type: "Dark",     condition: "Near Mint",      price: 60,  stock: 1, emoji: "🌙", rare: true  },
-  { id: "ex-07", name: "Dragonite",          set: "Pokémon GO",       number: "049/078", type: "Dragon",   condition: "Played",         price: 12,  stock: 2, emoji: "🐉", rare: false },
-  { id: "ex-08", name: "Snorlax",            set: "Crown Zenith",     number: "105/159", type: "Normal",   condition: "Mint",           price: 20,  stock: 0, emoji: "😴", rare: false },
+  // { id: "pika-02", name: "Pikachu", set: "Scarlet & Violet", number: "063/198", type: "Electric", condition: "Mint", price: 15, stock: 1, emoji: "⚡", rare: false },
 ];
 
 /* =====================================================================
@@ -86,7 +79,14 @@ function filtered() {
 
 function renderGrid() {
   const list = filtered();
-  $("#empty").hidden = list.length > 0;
+  const empty = $("#empty");
+  if (PRODUCTS.length === 0) {
+    empty.hidden = false;
+    empty.textContent = "New cards coming soon! Message us on WhatsApp to ask what's in stock.";
+  } else {
+    empty.hidden = list.length > 0;
+    empty.textContent = "No cards match your search. Try a different filter!";
+  }
   $("#grid").innerHTML = list.map((p) => {
     const sold = p.stock <= 0;
     return `

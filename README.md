@@ -1,4 +1,4 @@
-# Farhan's Card Shop
+# HoloCollector
 
 A small static website for a student-run Pokémon trading card shop in Dubai. Visitors browse listings, add cards to a cart saved in the browser, and send the order by WhatsApp or email. No payment is taken on the site.
 
@@ -27,7 +27,7 @@ To add a card, copy one `{ ... }` block, paste it below the last card (keep the 
 
 To remove a card, delete its `{ ... }` block.
 
-The cards in the file now are examples. Replace them with real stock before taking orders.
+`PRODUCTS` starts empty, with one commented sample line that shows the format. Uncomment that line or copy it, then edit the values, before taking orders. There is no example stock on the site.
 
 Shop name, WhatsApp number, and email are in the `SHOP` object in the same file. Update the shop name in `index.html` as well (the `<title>` and any element with `data-shop-name`). The WhatsApp value is digits only, in international format, with no `+` and no leading `0`.
 
