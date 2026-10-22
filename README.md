@@ -2,13 +2,11 @@
 
 A small static website for a student-run Pokémon trading card shop in Dubai. Visitors browse listings, add cards to a cart saved in the browser, and send the order by WhatsApp or email. No payment is taken on the site.
 
-The site is meant to be published at [https://farhanvakil13-sys.github.io/card-shop/](https://farhanvakil13-sys.github.io/card-shop/). To preview locally, open `index.html` in a browser.
+The live site is [https://farhanvakil13-sys.github.io/card-shop/](https://farhanvakil13-sys.github.io/card-shop/). To preview locally, open `index.html` in a browser.
 
 ## GitHub Pages
 
-Pages is not turned on yet. In the repo, open **Settings → Pages → Build and deployment** and set **Source** to **GitHub Actions**, then re-run the "Deploy static content to Pages" workflow. The workflow in `.github/workflows/pages.yml` uploads the files at the repo root and deploys them.
-
-To serve `main` directly instead, choose **Deploy from a branch**, branch **main**, folder **/ (root)**. That uses `.nojekyll` so Pages does not run Jekyll. Disable the Actions workflow if you use the branch source, or each push will fail the deploy job.
+Source is **GitHub Actions**. A push to `main` runs `.github/workflows/pages.yml`, which uploads the files at the repo root and deploys them. `.nojekyll` is included so Pages does not run Jekyll.
 
 ## Edit the card list
 
