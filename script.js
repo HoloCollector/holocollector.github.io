@@ -11,23 +11,40 @@ const SHOP = {
 /* =====================================================================
    PRODUCTS — the list of cards for sale
    ---------------------------------------------------------------------
-   HOW TO ADD A CARD: copy one { ... } block, paste it below the last one
-   (keep the comma between blocks!) and change the values:
-     id        – unique short code, no spaces (e.g. "pika-02")
-     name      – card name shown on the site
-     set       – the set / expansion it's from
-     number    – card number in the set (optional, "" if unknown)
-     type      – one of: Fire, Water, Grass, Electric, Psychic, Dark, Dragon, Normal
-     condition – Mint, Near Mint, Lightly Played, Played
-     price     – price in AED (number only, no "AED")
+   HOW TO ADD A CARD: copy the sample line below, delete the // at the
+   start, and change the values. Keep a comma between cards.
+     id        – a short code only you use, no spaces (e.g. "pika-02")
+     name      – the card name people see
+     set       – the set it comes from, like "Brilliant Stars"
+     number    – the card number, like "079/172" (use "" if you don't know)
+     tcgId     – the card's id on the price site, like "swsh9-79".
+                 This is how the daily price finder knows which card you mean.
+                 To find one, open this link and change the name at the end:
+                 https://api.pokemontcg.io/v2/cards?q=name:lucario
+                 Look for "id" on the matching card (it looks like "swsh9-79").
+                 You can leave tcgId out. The finder will then try the set
+                 name plus the card number.
+     variant   – optional. Which copy's price to use: "holofoil",
+                 "reverseHolofoil", or "normal". Leave it out and the finder
+                 uses holofoil, then reverse holofoil, then normal.
+     autoPrice – set this to false to keep the price you type yourself.
+                 Leave it out to use the market price (market + 10%, in AED).
+     type      – one of: Fire, Water, Grass, Electric, Psychic, Dark, Dragon, Fighting, Normal
+     condition – Mint, Near Mint, Lightly Played, or Played.
+                 Mint and Near Mint = full price. Lightly Played = 85%.
+                 Played = 70%. Change those in scripts/update-prices.mjs.
+     price     – your backup price in AED (a number only, no "AED").
+                 Used when autoPrice is false, or if the price finder can't
+                 find this card.
      stock     – how many you have (0 = shows "Sold out")
-     emoji     – placeholder picture (any emoji)
-     rare      – true to show a "RARE" badge, false otherwise
-   HOW TO REMOVE A CARD: delete its { ... } block.
+     emoji     – a stand-in picture (any emoji)
+     rare      – true to show a RARE badge, false otherwise
+   HOW TO REMOVE A CARD: delete its { ... } line.
+   Prices refresh every day: market price + 10%, rounded up to whole dirhams.
    NOTE: The list starts empty. Uncomment the sample line (or copy it) to add a real card.
    ===================================================================== */
 const PRODUCTS = [
-  // { id: "pika-02", name: "Pikachu", set: "Scarlet & Violet", number: "063/198", type: "Electric", condition: "Mint", price: 15, stock: 1, emoji: "⚡", rare: false },
+  // { id: "lucario-01", name: "Lucario", set: "Brilliant Stars", number: "079/172", tcgId: "swsh9-79", variant: "holofoil", type: "Fighting", condition: "Near Mint", price: 5, stock: 1, emoji: "🥋", rare: false },
 ];
 
 /* =====================================================================
@@ -37,6 +54,44 @@ const CART_KEY = "cardshop-cart-v1";
 const $ = (s) => document.querySelector(s);
 const fmt = (n) => `${n.toLocaleString("en-AE")} ${SHOP.currency}`;
 const byId = (id) => PRODUCTS.find((p) => p.id === id);
+let priceBook = { updated: "", cards: {} };
+
+function priceOf(p) {
+  if (!p) return 0;
+  if (p.autoPrice === false) return Number(p.price) || 0;
+  const saved = priceBook.cards && priceBook.cards[p.id];
+  const market = saved ? Number(saved.price) : NaN;
+  if (Number.isFinite(market)) return market;
+  return Number(p.price) || 0;
+}
+
+async function loadPriceBook() {
+  try {
+    const res = await fetch("prices.json", { cache: "no-cache" });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data && data.cards && typeof data.cards === "object") {
+      priceBook = { updated: String(data.updated || ""), cards: data.cards };
+      return;
+    }
+    const cards = {};
+    if (data && typeof data === "object") {
+      for (const [id, row] of Object.entries(data)) {
+        if (row && typeof row === "object" && Number.isFinite(Number(row.price))) cards[id] = row;
+      }
+    }
+    priceBook = { updated: String((data && data.updated) || ""), cards };
+  } catch {
+    /* offline or missing file: each card keeps its typed price */
+  }
+}
+
+function formatUpdated(iso) {
+  const day = String(iso || "").slice(0, 10);
+  const date = new Date(`${day}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return day;
+  return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+}
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 let cart = loadCart();
@@ -68,11 +123,11 @@ function filtered() {
   let list = PRODUCTS.filter((p) =>
     (!q || `${p.name} ${p.set} ${p.number}`.toLowerCase().includes(q)) &&
     (type === "all" || p.type === type) &&
-    p.price >= min && p.price < max
+    priceOf(p) >= min && priceOf(p) < max
   );
   const sort = $("#sort").value;
-  if (sort === "price-asc") list.sort((a, b) => a.price - b.price);
-  if (sort === "price-desc") list.sort((a, b) => b.price - a.price);
+  if (sort === "price-asc") list.sort((a, b) => priceOf(a) - priceOf(b));
+  if (sort === "price-desc") list.sort((a, b) => priceOf(b) - priceOf(a));
   if (sort === "name") list.sort((a, b) => a.name.localeCompare(b.name));
   return list;
 }
@@ -101,7 +156,7 @@ function renderGrid() {
         <div class="p-meta">${esc(p.set)}${p.number ? " · " + esc(p.number) : ""} · ${esc(p.type)}</div>
         <span class="cond">${esc(p.condition)}</span>
         <div class="p-foot">
-          <div class="price">${p.price} <small>${SHOP.currency}</small></div>
+          <div class="price">${priceOf(p)} <small>${SHOP.currency}</small></div>
           <button class="btn btn-primary add" data-add="${p.id}" ${sold ? "disabled" : ""}>${sold ? "Sold out" : "Add +"}</button>
         </div>
       </div>
@@ -113,7 +168,7 @@ function renderGrid() {
 function cartLines() {
   return Object.entries(cart).map(([id, qty]) => ({ p: byId(id), qty })).filter((l) => l.p);
 }
-function cartTotal() { return cartLines().reduce((s, l) => s + l.p.price * l.qty, 0); }
+function cartTotal() { return cartLines().reduce((s, l) => s + priceOf(l.p) * l.qty, 0); }
 
 function addToCart(id) {
   const p = byId(id);
@@ -141,7 +196,7 @@ function renderCart() {
       <div class="ci-thumb t-${p.type.toLowerCase()}">${p.emoji}</div>
       <div>
         <div class="ci-name">${esc(p.name)}</div>
-        <div class="ci-sub">${esc(p.condition)} · ${fmt(p.price)} each</div>
+        <div class="ci-sub">${esc(p.condition)} · ${fmt(priceOf(p))} each</div>
         <button class="ci-remove" data-remove="${p.id}">Remove</button>
       </div>
       <div class="qty">
@@ -161,7 +216,7 @@ function openCart(open) {
 /* ---------- Checkout (no payment — builds a WhatsApp / email message) ---------- */
 function buildMessage(data) {
   const lines = cartLines().map(({ p, qty }) =>
-    `• ${qty} × ${p.name} (${p.set}${p.number ? " " + p.number : ""}, ${p.condition}) – ${fmt(p.price * qty)}`);
+    `• ${qty} × ${p.name} (${p.set}${p.number ? " " + p.number : ""}, ${p.condition}) – ${fmt(priceOf(p) * qty)}`);
   return [
     `Hi! I'd like to order from ${SHOP.name}:`,
     "",
@@ -211,7 +266,13 @@ function toast(msg) {
 }
 
 /* ---------- Wire up ---------- */
-function init() {
+async function init() {
+  await loadPriceBook();
+  const priceNote = $("#priceNote");
+  if (priceNote && priceBook.updated) {
+    priceNote.hidden = false;
+    priceNote.textContent = `Prices updated ${formatUpdated(priceBook.updated)}`;
+  }
   document.title = `${SHOP.name} – Trading Cards in Dubai`;
   document.querySelectorAll("[data-shop-name]").forEach((el) => (el.textContent = SHOP.name));
   $("#year").textContent = new Date().getFullYear();

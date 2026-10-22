@@ -74,7 +74,9 @@ h1,h2,h3{line-height:1.15;margin:0 0 .5em}
 .t-psychic{background:linear-gradient(135deg,#f5c2ff,#a24bd1)}
 .t-dark{background:linear-gradient(135deg,#9aa0b5,#2c2f3d)}
 .t-dragon{background:linear-gradient(135deg,#ffe0a3,#c47f17)}
+.t-fighting{background:linear-gradient(135deg,#f3c7a0,#c47a2c)}
 .t-normal{background:linear-gradient(135deg,#eceff4,#a3abba)}
+.price-note{margin:-6px 0 16px}
 
 .band{background:var(--yellow);padding:56px 0}
 .band h2{font-size:2rem}

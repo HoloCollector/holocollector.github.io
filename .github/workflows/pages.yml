@@ -4,6 +4,10 @@ name: Deploy static content to Pages
 on:
   push:
     branches: ["main"]
+  # 03:00 UTC every day. The price step lives in this workflow because a
+  # commit made with GITHUB_TOKEN would not start another workflow.
+  schedule:
+    - cron: "0 3 * * *"
   workflow_dispatch:
 
 permissions:
@@ -24,6 +28,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Update market prices
+        continue-on-error: true
+        env:
+          POKEMONTCG_API_KEY: ${{ secrets.POKEMONTCG_API_KEY }}
+        run: node scripts/update-prices.mjs
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
