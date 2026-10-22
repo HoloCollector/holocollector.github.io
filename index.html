@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- ===== EDIT ME: shop name appears in the <title> and in elements with data-shop-name ===== -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Farhan's Card Shop – Trading Cards in Dubai</title>
+<meta name="description" content="Fan-run trading card shop in Dubai. Browse cards, add to cart, and order via WhatsApp or email.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a href="#" class="brand"><span class="brand-ball" aria-hidden="true"></span><span data-shop-name>Farhan's Card Shop</span></a>
+    <nav class="nav">
+      <a href="#shop">Shop</a>
+      <a href="#how">How to buy</a>
+      <a href="#about">About</a>
+    </nav>
+    <button class="cart-btn" id="cartOpen" aria-label="Open cart">🛒 <span id="cartCount">0</span></button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="hero-text">
+      <span class="pill">📍 Dubai · Collect-in-person or delivery</span>
+      <h1>Rare pulls, fair prices,<br><span class="hl">trusted trades.</span></h1>
+      <p>Hand-checked trading cards from a fellow collector. Browse, add to your cart, and send your order straight to me on WhatsApp — no online payment needed.</p>
+      <div class="hero-cta">
+        <a href="#shop" class="btn btn-primary">Browse cards</a>
+        <a href="#how" class="btn btn-ghost">How it works</a>
+      </div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <div class="float-card c1"><span>⚡</span></div>
+      <div class="float-card c2"><span>🔥</span></div>
+      <div class="float-card c3"><span>💧</span></div>
+    </div>
+  </div>
+</section>
+
+<main id="shop" class="container">
+  <div class="section-head">
+    <h2>Shop the cards</h2>
+    <p class="muted">⚠️ Listings below are <strong>examples</strong> — real stock coming soon.</p>
+  </div>
+
+  <div class="filters">
+    <input type="search" id="search" placeholder="🔍 Search by name or set…" aria-label="Search cards">
+    <select id="typeFilter" aria-label="Filter by type"><option value="all">All types</option></select>
+    <select id="priceFilter" aria-label="Filter by price">
+      <option value="all">Any price</option>
+      <option value="0-25">Under 25 AED</option>
+      <option value="25-100">25 – 100 AED</option>
+      <option value="100-99999">100+ AED</option>
+    </select>
+    <select id="sort" aria-label="Sort">
+      <option value="default">Sort: Featured</option>
+      <option value="price-asc">Price: low → high</option>
+      <option value="price-desc">Price: high → low</option>
+      <option value="name">Name A–Z</option>
+    </select>
+  </div>
+
+  <div id="grid" class="grid"></div>
+  <p id="empty" class="empty" hidden>No cards match your search. Try a different filter!</p>
+</main>
+
+<section id="how" class="band">
+  <div class="container">
+    <h2>How to buy</h2>
+    <ol class="steps">
+      <li><span>1</span><h3>Add to cart</h3><p>Pick the cards you want. Your cart is saved on this device.</p></li>
+      <li><span>2</span><h3>Send your order</h3><p>Fill in your name and contact, then tap WhatsApp or Email — your order is written for you.</p></li>
+      <li><span>3</span><h3>I confirm</h3><p>I'll reply to confirm stock and arrange pickup or delivery in Dubai.</p></li>
+      <li><span>4</span><h3>Pay &amp; collect</h3><p>Pay on collection (cash or bank transfer). No payment is taken on this website.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section id="about" class="container about">
+  <div>
+    <h2>About me</h2>
+    <p>Hi! I'm Farhan, a Year 10 student in Dubai and a long-time card collector. I sell cards from my own collection and trades, and every card is checked and graded honestly before listing.</p>
+    <p><strong>Condition guide:</strong> <em>Mint</em> – perfect · <em>Near Mint</em> – tiny wear · <em>Lightly Played</em> – light edge wear · <em>Played</em> – visible wear.</p>
+  </div>
+  <div class="about-box">
+    <h3>Questions?</h3>
+    <p>Message me on WhatsApp or email — happy to send extra photos of any card.</p>
+    <a class="btn btn-primary" id="waContact" href="#" target="_blank" rel="noopener">💬 WhatsApp me</a>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <p>© <span id="year"></span> <span data-shop-name>Farhan's Card Shop</span> · Dubai, UAE</p>
+    <p class="small">This is an independent fan seller. Not affiliated with, endorsed by, or sponsored by Nintendo, Creatures Inc., GAME FREAK inc., or The Pokémon Company. All trademarks belong to their respective owners. Card images are placeholders.</p>
+  </div>
+</footer>
+
+<!-- Cart drawer -->
+<div class="overlay" id="overlay" hidden></div>
+<aside class="drawer" id="drawer" aria-hidden="true" aria-label="Shopping cart">
+  <div class="drawer-head">
+    <h2>Your cart</h2>
+    <button class="icon-btn" id="cartClose" aria-label="Close cart">✕</button>
+  </div>
+  <div id="cartItems" class="cart-items"></div>
+  <div class="cart-total"><span>Total</span><strong id="cartTotal">0 AED</strong></div>
+
+  <form id="orderForm" class="order-form">
+    <h3>Checkout</h3>
+    <p class="small muted">No payment here — this sends your order to me to confirm.</p>
+    <label>Name<input name="name" required placeholder="Your name"></label>
+    <label>Phone or email<input name="contact" required placeholder="05x xxx xxxx / you@email.com"></label>
+    <label>Notes<textarea name="notes" rows="2" placeholder="Pickup area, questions…"></textarea></label>
+    <p class="form-error" id="formError" hidden></p>
+    <div class="checkout-btns">
+      <button type="submit" class="btn btn-wa" data-method="whatsapp">💬 Order via WhatsApp</button>
+      <button type="submit" class="btn btn-ghost" data-method="email">✉️ Order via Email</button>
+    </div>
+    <button type="button" class="link-btn" id="clearCart">Clear cart</button>
+  </form>
+</aside>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
