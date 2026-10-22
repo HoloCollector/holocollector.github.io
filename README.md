@@ -1,8 +1,8 @@
 # HoloCollector
 
-A small static website for a student-run Pokémon trading card shop in Dubai. Visitors browse listings, add cards to a cart saved in the browser, and send the order by WhatsApp or email. No payment is taken on the site.
+A small static website for a student-run Pokémon trading card shop in Dubai. Visitors browse listings, add cards to a cart saved in the browser, and send the order by WhatsApp. No payment is taken on the site.
 
-The live site is [https://farhanvakil13-sys.github.io/card-shop/](https://farhanvakil13-sys.github.io/card-shop/). To preview locally, open `index.html` in a browser.
+The live site is [https://holocollector.github.io/](https://holocollector.github.io/). To preview locally, open `index.html` in a browser.
 
 ## GitHub Pages
 
@@ -30,6 +30,8 @@ To remove a card, delete its `{ ... }` block.
 `PRODUCTS` starts empty, with one commented sample line that shows the format. Uncomment that line or copy it, then edit the values, before taking orders. There is no example stock on the site.
 
 Shop name, WhatsApp number, and email are in the `SHOP` object in the same file. Update the shop name in `index.html` as well (the `<title>` and any element with `data-shop-name`). The WhatsApp value is digits only, in international format, with no `+` and no leading `0`.
+
+Leave `SHOP.email` as `""` until you have a real address. While it is empty, the site hides email ordering and any email contact link. Set it to that address to show them again. Do not put a placeholder address there.
 
 ## Files
 

@@ -3,8 +3,8 @@
    ===================================================================== */
 const SHOP = {
   name: "HoloCollector",             // also edit it in index.html (title + data-shop-name)
-  whatsapp: "971500000000",          // PLACEHOLDER: your number in international format, digits only (971 = UAE, no + or leading 0)
-  email: "yourname@example.com",     // PLACEHOLDER: your email address
+  whatsapp: "971507591359",          // digits only, international format (971 = UAE, no + or leading 0)
+  email: "",                         // Leave "" to hide email ordering and email links. Set a real address, such as "name@gmail.com", to show them.
   currency: "AED",
 };
 
@@ -174,9 +174,12 @@ function buildMessage(data) {
     data.notes ? `Notes: ${data.notes}` : null,
   ].filter((l) => l !== null).join("\n");
 }
+function shopEmail() { return String(SHOP.email || "").trim(); }
 function waLink(text) { return `https://wa.me/${SHOP.whatsapp}?text=${encodeURIComponent(text)}`; }
 function mailLink(text) {
-  return `mailto:${SHOP.email}?subject=${encodeURIComponent("Card order – " + SHOP.name)}&body=${encodeURIComponent(text)}`;
+  const email = shopEmail();
+  if (!email) return "";
+  return `mailto:${email}?subject=${encodeURIComponent("Card order – " + SHOP.name)}&body=${encodeURIComponent(text)}`;
 }
 
 function handleCheckout(e) {
@@ -187,12 +190,16 @@ function handleCheckout(e) {
   for (const k in data) data[k] = String(data[k]).trim();
   if (!cartLines().length) { err.textContent = "Your cart is empty."; err.hidden = false; return; }
   if (!data.name || !data.contact) { err.textContent = "Please add your name and contact."; err.hidden = false; return; }
-  err.hidden = true;
   const method = e.submitter?.dataset.method || "whatsapp";
+  if (method === "email" && !shopEmail()) {
+    err.textContent = "Email ordering isn't available. Please use WhatsApp.";
+    err.hidden = false;
+    return;
+  }
+  err.hidden = true;
   const msg = buildMessage(data);
-  const url = method === "email" ? mailLink(msg) : waLink(msg);
-  if (method === "email") window.location.href = url;
-  else window.open(url, "_blank", "noopener");
+  if (method === "email") window.location.href = mailLink(msg);
+  else window.open(waLink(msg), "_blank", "noopener");
   toast("Order message ready — just hit send! ✅");
 }
 
@@ -209,6 +216,23 @@ function init() {
   document.querySelectorAll("[data-shop-name]").forEach((el) => (el.textContent = SHOP.name));
   $("#year").textContent = new Date().getFullYear();
   $("#waContact").href = waLink(`Hi! I have a question about ${SHOP.name}.`);
+  const emailOn = shopEmail() !== "";
+  document.querySelectorAll("[data-requires-email]").forEach((el) => {
+    el.hidden = !emailOn;
+    if (emailOn && el.dataset.emailLink != null) el.href = `mailto:${shopEmail()}`;
+  });
+  const orderStep = $("#orderStep");
+  if (orderStep) {
+    orderStep.textContent = emailOn
+      ? "Fill in your name and contact, then tap WhatsApp or Email — your order is written for you."
+      : "Fill in your name and contact, then tap WhatsApp — your order is written for you.";
+  }
+  const contactBlurb = $("#contactBlurb");
+  if (contactBlurb) {
+    contactBlurb.textContent = emailOn
+      ? "Message me on WhatsApp or email — happy to send extra photos of any card."
+      : "Message me on WhatsApp — happy to send extra photos of any card.";
+  }
 
   renderFilters(); renderGrid(); renderCart();
   ["#search", "#typeFilter", "#priceFilter", "#sort"].forEach((s) => $(s).addEventListener("input", renderGrid));

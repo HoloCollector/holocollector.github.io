@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>HoloCollector – Trading Cards in Dubai</title>
-<meta name="description" content="Fan-run trading card shop in Dubai. Browse cards, add to cart, and order via WhatsApp or email.">
+<meta name="description" content="Fan-run trading card shop in Dubai. Browse cards, add to cart, and order via WhatsApp.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -75,7 +75,7 @@
     <h2>How to buy</h2>
     <ol class="steps">
       <li><span>1</span><h3>Add to cart</h3><p>Pick the cards you want. Your cart is saved on this device.</p></li>
-      <li><span>2</span><h3>Send your order</h3><p>Fill in your name and contact, then tap WhatsApp or Email — your order is written for you.</p></li>
+      <li><span>2</span><h3>Send your order</h3><p id="orderStep">Fill in your name and contact, then tap WhatsApp — your order is written for you.</p></li>
       <li><span>3</span><h3>I confirm</h3><p>I'll reply to confirm stock and arrange pickup or delivery in Dubai.</p></li>
       <li><span>4</span><h3>Pay &amp; collect</h3><p>Pay on collection (cash or bank transfer). No payment is taken on this website.</p></li>
     </ol>
@@ -90,8 +90,9 @@
   </div>
   <div class="about-box">
     <h3>Questions?</h3>
-    <p>Message me on WhatsApp or email — happy to send extra photos of any card.</p>
+    <p id="contactBlurb">Message me on WhatsApp — happy to send extra photos of any card.</p>
     <a class="btn btn-primary" id="waContact" href="#" target="_blank" rel="noopener">💬 WhatsApp me</a>
+    <a class="btn btn-ghost" id="emailContact" data-requires-email data-email-link href="#" hidden>✉️ Email me</a>
   </div>
 </section>
 
@@ -121,7 +122,7 @@
     <p class="form-error" id="formError" hidden></p>
     <div class="checkout-btns">
       <button type="submit" class="btn btn-wa" data-method="whatsapp">💬 Order via WhatsApp</button>
-      <button type="submit" class="btn btn-ghost" data-method="email">✉️ Order via Email</button>
+      <button type="submit" class="btn btn-ghost" data-method="email" data-requires-email hidden>✉️ Order via Email</button>
     </div>
     <button type="button" class="link-btn" id="clearCart">Clear cart</button>
   </form>
